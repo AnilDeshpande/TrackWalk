@@ -1,0 +1,84 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ActvityMain"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:id="@+id/tableHolder">
+        <TableRow android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="3">
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Minutes"
+                android:textSize="16sp"
+                android:gravity="center"
+                />
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Seconds"
+                android:textSize="16sp"
+                android:gravity="center"
+                />
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Milli Seconds"
+                android:textSize="16sp"
+                android:gravity="center"
+                />
+        </TableRow>
+
+        <TableRow android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="3">
+
+            <TextView android:id="@+id/textViewMinis"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="00"
+                android:textSize="64sp"
+                android:gravity="center"
+                />
+
+            <TextView android:id="@+id/textViewSecs"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="00"
+                android:textSize="64sp"
+                android:gravity="center"
+                />
+
+            <TextView android:id="@+id/textViewMilliSecs"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="00"
+                android:textSize="64sp"
+                android:gravity="center"
+                />
+        </TableRow>
+    </TableLayout>
+
+
+    <ImageButton
+        android:background="@drawable/custom_button_background2"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:id="@+id/imageButtonStartStop"
+        android:src="@drawable/icon_play"/>
+
+
+
+</LinearLayout>
