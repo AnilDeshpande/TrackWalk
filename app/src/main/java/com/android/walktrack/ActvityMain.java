@@ -1,11 +1,16 @@
 package com.android.walktrack;
 
+import android.app.IntentService;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,7 +27,11 @@ public class ActvityMain extends AppCompatActivity {
     private Context mContext;
     private boolean isTimerStarted;
 
-    public class MyTimerAsyncTask extends AsyncTask<Void,Integer,Integer> {
+    IntentService timerCounterService;
+    Intent serviceIntent;
+
+    BroadcastReceiver broadcastReceiver;
+    /*public class MyTimerAsyncTask extends AsyncTask<Void,Integer,Integer> {
 
         private int minutes, seconds, millSeconds;
         Thread thread;
@@ -61,7 +70,7 @@ public class ActvityMain extends AppCompatActivity {
 
                 return null;
         }
-    }
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,18 +84,47 @@ public class ActvityMain extends AppCompatActivity {
 
         imageButtonStartStop =(ImageButton)findViewById(R.id.imageButtonStartStop);
 
+        timerCounterService =new TimerCounterService();
+
+
+
         imageButtonStartStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(isTimerStarted){
-                    isTimerStarted=false;
-                    imageButtonStartStop.setImageDrawable(ContextCompat.getDrawable(mContext,R.drawable.icon_play));
-                }else{
-                    isTimerStarted=true;
-                    imageButtonStartStop.setImageDrawable(ContextCompat.getDrawable(mContext,R.drawable.icon_stop));
+                if (isTimerStarted) {
+                    isTimerStarted = false;
+                    imageButtonStartStop.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.icon_play));
+                    if (serviceIntent != null) {
+                        stopService(serviceIntent);
+                    }
+                } else {
+                    isTimerStarted = true;
+                    imageButtonStartStop.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.icon_stop));
+                    serviceIntent = new Intent(mContext, timerCounterService.getClass());
+                    startService(serviceIntent);
                 }
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        IntentFilter intentFilter=new IntentFilter("com.TimerBroadcastReceiver");
+        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
+        broadcastReceiver=new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.i(TAG, "Broadcast Received");
+            }
+        };
+        registerReceiver(broadcastReceiver,intentFilter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(broadcastReceiver);
     }
 
     @Override
