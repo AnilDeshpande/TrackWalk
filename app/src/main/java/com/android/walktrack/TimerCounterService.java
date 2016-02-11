@@ -12,15 +12,15 @@ import java.util.Date;
  */
 public class TimerCounterService extends IntentService {
 
-    private static final String START_TIME="start_time";
-    private static final String STOP_TIME="stop_time";
-    private static final String CURRENT_TIME="current_time";
-    private static final String COUNTER="counter";
+    public static final String START_TIME="start_time";
+    public static final String STOP_TIME="stop_time";
+    public static final String CURRENT_TIME="current_time";
+    public static final String COUNTER="counter";
 
     private long startTime;
     private long currentTime;
     private long stopTime;
-    private int count=0;
+    private long count=0;
 
     private Context mContext;
     private static final String TAG=TimerCounterService.class.getSimpleName();
@@ -31,11 +31,11 @@ public class TimerCounterService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        mContext=this;
+        mContext=getApplicationContext();
         Intent intent1=new Intent();
         intent1.setAction("com.TimerBroadcastReceiver");
-        intent1.putExtra(START_TIME,new Date().getTime());
-        for (int i=0;i<5;i++){
+        intent1.putExtra(START_TIME, new Date().getTime());
+        while (((WalkTrackApplication)mContext).isWalking()){
             try {
                 Log.i(TAG, "Service has started");
                 Thread.sleep(1000);

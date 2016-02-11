@@ -21,7 +21,7 @@ public class ActvityMain extends AppCompatActivity {
 
     private static final String TAG=ActvityMain.class.getSimpleName();
 
-    private TextView textViewMins, textViewSeconds, textViewMilliSeconds;
+    private TextView textViewMins, textViewSeconds;
     private ImageButton imageButtonStartStop;
 
     private Context mContext;
@@ -30,47 +30,11 @@ public class ActvityMain extends AppCompatActivity {
     IntentService timerCounterService;
     Intent serviceIntent;
 
+    private long seconds;
+    private long minutes;
+
     BroadcastReceiver broadcastReceiver;
-    /*public class MyTimerAsyncTask extends AsyncTask<Void,Integer,Integer> {
 
-        private int minutes, seconds, millSeconds;
-        Thread thread;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            minutes=0;
-            seconds=0;
-            millSeconds=0;
-            thread=new Thread(new Runnable() {
-                @Override
-                public void run() {
-
-                }
-            });
-        }
-
-        @Override
-        protected void onPostExecute(Integer integer) {
-            super.onPostExecute(integer);
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected Integer doInBackground(Void... voids) {
-
-            while(!isTimerStarted){
-
-            }
-
-
-                return null;
-        }
-    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,26 +43,23 @@ public class ActvityMain extends AppCompatActivity {
 
         textViewMins=(TextView)findViewById(R.id.textViewMinis);
         textViewSeconds=(TextView)findViewById(R.id.textViewSecs);
-        textViewMilliSeconds=(TextView)findViewById(R.id.textViewMilliSecs);
         mContext=getApplicationContext();
 
         imageButtonStartStop =(ImageButton)findViewById(R.id.imageButtonStartStop);
 
         timerCounterService =new TimerCounterService();
 
-
-
         imageButtonStartStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isTimerStarted) {
-                    isTimerStarted = false;
+                if (((WalkTrackApplication)mContext).isWalking()) {
+                    ((WalkTrackApplication)mContext).setIsWalking(false);
                     imageButtonStartStop.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.icon_play));
                     if (serviceIntent != null) {
                         stopService(serviceIntent);
                     }
                 } else {
-                    isTimerStarted = true;
+                    ((WalkTrackApplication)mContext).setIsWalking(true);
                     imageButtonStartStop.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.icon_stop));
                     serviceIntent = new Intent(mContext, timerCounterService.getClass());
                     startService(serviceIntent);
@@ -113,12 +74,31 @@ public class ActvityMain extends AppCompatActivity {
         IntentFilter intentFilter=new IntentFilter("com.TimerBroadcastReceiver");
         intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
         broadcastReceiver=new BroadcastReceiver() {
+
             @Override
             public void onReceive(Context context, Intent intent) {
                 Log.i(TAG, "Broadcast Received");
+                seconds=intent.getLongExtra(TimerCounterService.COUNTER,0);
+                if(seconds>59){
+                    minutes=seconds/60;
+                    seconds=seconds%60;
+                }
+                textViewSeconds.setText(""+seconds);
+                textViewMins.setText(""+minutes);
+
             }
         };
         registerReceiver(broadcastReceiver,intentFilter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(((WalkTrackApplication)mContext).isWalking()){
+            imageButtonStartStop.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.icon_stop));
+        }else{
+            imageButtonStartStop.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.icon_play));
+        }
     }
 
     @Override
